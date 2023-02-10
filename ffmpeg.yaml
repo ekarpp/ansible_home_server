@@ -1,0 +1,62 @@
+---
+- name: compile and install ffmpeg
+  hosts: all
+  vars:
+    packages:
+      - autoconf
+      - automake
+      - build-essential
+      - cmake
+      - git-core
+      - libass-dev
+      - libdav1d-dev
+      - libfreetype6-dev
+      - libgnutls28-dev
+      - libmp3lame-dev
+      - libnuma-dev
+      - libopus-dev
+      - libsdl2-dev
+      - libtool
+      - libva-dev
+      - libvdpau-dev
+      - libvorbis-dev
+      - libvpx-dev
+      - libx264-dev
+      - libx265-dev
+      - libxcb1-dev
+      - libxcb-shm0-dev
+      - libxcb-xfixes0-dev
+      - meson
+      - ninja-build
+      - pkg-config
+      - texinfo
+      - yasm
+      - zlib1g-dev
+  tasks:
+    - name: update and install required packages
+      become: yes
+      apt:
+        update_cache: yes
+        state: present
+        name: "{{ packages }}"
+    - name: get source
+      git:
+        repo: https://git.ffmpeg.org/ffmpeg.git
+        dest: /tmp/ffmpeg
+        clone: yes
+        update: yes
+    - name: compile and install
+      become: yes
+      shell:
+        chdir: /tmp/ffmpeg
+        cmd: |
+          ./configure --prefix=/usr/local --enable-gpl --enable-libx264 --enable-libx265 --enable-libmp3lame --enable-libvpx --enable-libopus --enable-libdav1d --enable-gnutls --enable-shared && \
+          make -j3 && \
+          make install && \
+          cd .. && \
+          rm -rf ffmpeg
+    - name: remove packages
+      become: yes
+      apt:
+        state: absent
+        name: "{{ packages }}"

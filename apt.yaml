@@ -1,0 +1,26 @@
+---
+- name: install used apt packages
+  hosts: all
+  tasks:
+  - name: update cache
+    become: yes
+    apt:
+      update_cache: yes
+  - name: install
+    become: yes
+    apt:
+      state: present
+      name:
+        - curl
+        - flac
+        - gcc
+        - git
+        - gdb
+        - htop
+        - jq
+        - lame
+        - make
+        - podman
+        - sox
+        - tmux
+        - wget

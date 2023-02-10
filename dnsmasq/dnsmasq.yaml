@@ -1,0 +1,23 @@
+---
+- name: dnsmasq
+  hosts: all
+  tasks:
+  - name: install dnsmasq
+    become: yes
+    apt:
+      name: dnsmasq
+      state: present
+  - name: copy config
+    become: yes
+    copy:
+      src: dnsmasq.conf
+      dest: /etc/dnsmasq.conf
+  - name: set resolv
+    become: yes
+    shell: echo "nameserver 127.0.0.1" > /etc/resolv.conf
+  - name: start and enable dnsmasq
+    become: yes
+    service:
+      name: dnsmasq
+      enabled: yes
+      state: started
