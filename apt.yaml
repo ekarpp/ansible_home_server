@@ -21,6 +21,9 @@
         - lame
         - make
         - podman
+        - pip3
+        - python3
+        - smartmontools
         - sox
         - tmux
         - wget

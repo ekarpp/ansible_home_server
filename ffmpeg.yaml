@@ -2,61 +2,56 @@
 - name: compile and install ffmpeg
   hosts: all
   vars:
-    packages:
+    lib_pkg:
+      - libdav1d-dev
+      - libgnutls28-dev
+      - libmp3lame-dev
+      - libnuma-dev
+      - libopus-dev
+      - libtool
+      - libvorbis-dev
+      - libvpx-dev
+      - libx264-dev
+      - libx265-dev
+      - zlib1g-dev
+    build_pkg:
       - autoconf
       - automake
       - build-essential
       - cmake
       - git-core
-      - libass-dev
-      - libdav1d-dev
-      - libfreetype6-dev
-      - libgnutls28-dev
-      - libmp3lame-dev
-      - libnuma-dev
-      - libopus-dev
-      - libsdl2-dev
-      - libtool
-      - libva-dev
-      - libvdpau-dev
-      - libvorbis-dev
-      - libvpx-dev
-      - libx264-dev
-      - libx265-dev
-      - libxcb1-dev
-      - libxcb-shm0-dev
-      - libxcb-xfixes0-dev
       - meson
       - ninja-build
       - pkg-config
       - texinfo
       - yasm
-      - zlib1g-dev
   tasks:
     - name: update and install required packages
       become: yes
       apt:
         update_cache: yes
         state: present
-        name: "{{ packages }}"
+        name: "{{ build_pkg + lib_pkg }}"
     - name: get source
       git:
         repo: https://git.ffmpeg.org/ffmpeg.git
         dest: /tmp/ffmpeg
         clone: yes
         update: yes
-    - name: compile and install
-      become: yes
+    - name: compile
       shell:
         chdir: /tmp/ffmpeg
         cmd: |
-          ./configure --prefix=/usr/local --enable-gpl --enable-libx264 --enable-libx265 --enable-libmp3lame --enable-libvpx --enable-libopus --enable-libdav1d --enable-gnutls --enable-shared && \
-          make -j3 && \
-          make install && \
-          cd .. && \
-          rm -rf ffmpeg
+          ./configure --prefix=/usr/local --enable-gpl --enable-libx264 --enable-libx265 --enable-libmp3lame --enable-libvpx --enable-libopus --enable-libdav1d --enable-gnutls --enable-shared --disable-ffplay --disable-vdpau --disable-xlib &&
+          make -j3
+    - name: install
+      become: yes
+      shell:
+        chdir: /tmp/ffmpeg
+        cmd : make install
     - name: remove packages
       become: yes
       apt:
         state: absent
-        name: "{{ packages }}"
+        name: "{{ build_pkg }}"
+        autoremove: yes
