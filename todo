@@ -1,7 +1,0 @@
-podman + all packages
-crontab
-jellyfin
-ZFS??
-crags
-nginx
-cert update (acme.sh)

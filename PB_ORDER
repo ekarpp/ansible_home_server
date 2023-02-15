@@ -3,6 +3,4 @@ ffmpeg
 zfs
 cron
 jellyfin
-crag
-cert
-nginx
+nginx + acme.sh
