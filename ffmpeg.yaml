@@ -41,14 +41,21 @@
     - name: compile
       shell:
         chdir: /tmp/ffmpeg
-        cmd: |
-          ./configure --prefix=/usr/local --enable-gpl --enable-libx264 --enable-libx265 --enable-libmp3lame --enable-libvpx --enable-libopus --enable-libdav1d --enable-gnutls --enable-shared --disable-ffplay --disable-vdpau --disable-xlib &&
+        cmd: >
+          ./configure --prefix=/usr/local --enable-gpl --enable-libx264
+          --enable-libx265 --enable-libmp3lame --enable-libvpx
+          --enable-libopus --enable-libdav1d --enable-gnutls --enable-shared
+          --disable-ffplay --disable-vdpau --disable-xlib &&
           make -j3
     - name: install
       become: yes
       shell:
         chdir: /tmp/ffmpeg
-        cmd : make install
+        cmd: make install
+    - name: cleanup filesystem
+      file:
+        path: /tmp/ffmpeg
+        state: absent
     - name: remove packages
       become: yes
       apt:
