@@ -1,0 +1,31 @@
+#!/usr/bin/bash
+echo "TODO FOR CLOUDFLARE"
+
+exit 0
+
+
+curl -s "yle.fi" > /dev/null || exit 1
+
+key="*************"
+secret="****************"
+header="Authorization: sso-key $key:$secret"
+
+domain="karppinen.xyz"
+names=("@" "jellyfin")
+
+API_BASE="https://api.godaddy.com/v1/domains/${domain}/records/A"
+
+dns_ip=$(curl -s -X GET -H "$header" \
+"${API_BASE}/${names[0]}" \
+| jq '.[0].data' | tr -d "\"")
+
+curr_ip=$(curl -s icanhazip.com)
+
+if [ "$curr_ip" != "$dns_ip" ]; then
+	/usr/local/bin/telegram_msg "new ip ${curr_ip}, old ip ${dns_ip}"
+	for n in ${names[@]}; do
+		curl -X PUT -H "Content-Type: application/json" -H "$header" \
+		-d "[{\"data\": \"$curr_ip\"}]" \
+		"${API_BASE}/${n}"
+	done
+fi

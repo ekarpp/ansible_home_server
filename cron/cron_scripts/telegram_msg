@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+SECRET_FILE="/root/cron_scripts/secret.json"
+
+if [ $# -eq 0 ]; then
+	exit 1
+fi
+
+token=$(jq -r '.token' $SECRET_FILE)
+url="https://api.telegram.org/bot$token"
+chat_id=$(jq -r '.chat_id' $SECRET_FILE)
+
+curl -X GET -G "$url/sendMessage" -d chat_id="$chat_id" --data-urlencode "text=$*"

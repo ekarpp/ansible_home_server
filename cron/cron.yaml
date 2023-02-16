@@ -1,0 +1,71 @@
+---
+- name: crontab
+  hosts: pc
+  vars:
+    ZFS_POOL: datapool
+  tasks:
+  - name: copy scripts
+    become: yes
+    copy:
+      directory_mode: yes
+      src: cron_scripts
+      dest: /root
+  - name: execution permission for telegram_msg
+    become: yes
+    file:
+      path: /root/cron_scripts/telegram_msg
+      mode: u+x
+  - name: configure crontab
+    become: yes
+    block:
+      - name: cron env variable for shell
+        cron:
+          env: yes
+          name: SHELL
+          value: /usr/bin/bash
+      - name: cron env variable for path
+        cron:
+          env: yes
+          name: PATH
+          value: /usr/bin:/usr/sbin:/root/cron_scripts
+      - name: cron dns setup
+        cron:
+          name: update ip to dns provider hourly. script todo for CF
+          minute: '9'
+          job: dns_setup
+      - name: cron zfs scrub
+        cron:
+          name: start zfs scrub every first and last saturday of month at 1:00
+          minute: '0'
+          hour: '1'
+          day: '1-7,22-28'
+          job: 'test $(date +\%u) -eq 6 && zpool scrub {{ ZFS_POOL }}'
+      - name: cron zfs scrub report
+        cron:
+          name: >-
+            report zfs scrub result every first
+            and last sunday of month at 10:00
+          minute: '0'
+          hour: '10'
+          day: '1-7,22-28'
+          job: >-
+            test $(date +\%u) -eq 0 &&
+            zpool status {{ ZFS_POOL }} |
+            grep scan |
+            xargs telegram_msg
+      - name: cron smart check start
+        cron:
+          name: >-
+            start smart self test every friday at 23:59.
+            first of month is long, otherwise short
+          minute: '59'
+          hour: '23'
+          weekday: '5'
+          job: smart_start
+      - name: cron smart check report
+        cron:
+          name: report smart self test result every sunday at 11:59
+          minute: '59'
+          hour: '11'
+          weekday: '0'
+          job: smart_report

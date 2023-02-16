@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+SECRET_FILE="/root/cron_scripts/secret.json"
+
+MESSAGE=$(
+    for d in $(jq -r '.disk_ids[]' $SECRET_FILE)
+    do
+        echo -n "ID: ${d##*_} "
+        smartctl -l selftest /dev/disk/by-id/$d | grep "^# 1" | tr -s ' '
+    done
+)
+
+/root/cron_scripts/telegram_msg "$MESSAGE"

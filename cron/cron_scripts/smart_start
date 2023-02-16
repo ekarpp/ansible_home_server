@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+SECRET_FILE="/root/cron_scripts/secret.json"
+test_type=$([ $(date "+%d") -le 7 ] && echo "long" || echo "short")
+
+for d in $(jq -r '.disk_ids[]' $SECRET_FILE)
+do
+	smartctl -t $test_type /dev/disk/by-id/$d
+done
