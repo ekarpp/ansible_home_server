@@ -1,6 +1,6 @@
 ---
 - name: install used apt packages
-  hosts: all
+  hosts: pc
   tasks:
   - name: update cache
     become: yes

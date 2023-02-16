@@ -1,6 +1,6 @@
 ---
 - name: dnsmasq
-  hosts: all
+  hosts: pc
   tasks:
   - name: install dnsmasq
     become: yes

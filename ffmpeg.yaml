@@ -1,6 +1,6 @@
 ---
 - name: compile and install ffmpeg
-  hosts: all
+  hosts: pc
   vars:
     lib_pkg:
       - libdav1d-dev
