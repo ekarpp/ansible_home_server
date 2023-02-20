@@ -1,6 +1,6 @@
 apt
 ffmpeg
 zfs
+nfs
 cron
-jellyfin
 nginx + acme.sh
