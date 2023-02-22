@@ -1,6 +1,7 @@
 ---
 - name: crontab
   hosts: pc
+  gather_facts: no
   vars:
     ZFS_POOL: datapool
   tasks:
@@ -69,3 +70,9 @@
           hour: '11'
           weekday: '0'
           job: smart_report
+      - name: set motd :)
+        cron:
+          name: god says motd
+          minute: '01'
+          hour: '00'
+          job: echo "$(shuf -n 32 /root/cron_scripts/Happy.TXT --random-source=/dev/urandom | tr '\n' ' ')" > /etc/motd
