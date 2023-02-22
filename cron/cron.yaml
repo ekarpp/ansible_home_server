@@ -75,4 +75,4 @@
           name: god says motd
           minute: '01'
           hour: '00'
-          job: echo "$(shuf -n 32 /root/cron_scripts/Happy.TXT --random-source=/dev/urandom | tr '\n' ' ')" > /etc/motd
+          job: echo -e "\n$(shuf -n 32 /root/cron_scripts/Happy.TXT --random-source=/dev/urandom | tr '\n' ' ')\n" > /etc/motd
